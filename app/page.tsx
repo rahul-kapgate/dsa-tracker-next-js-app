@@ -2,10 +2,13 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import SignupDialog from "@/components/signup-dialog";
+import SignupDialog from "@/components/SignupDialog";
+import LoginDialog from "@/components/loginDialog";
 
 export default function Home() {
-  const [open, setOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
+
+  const [signupOpen, setSignupOpen] = useState(false);
 
   return (
     <>
@@ -32,17 +35,25 @@ export default function Home() {
             </p>
 
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-              <Button className=" p-4 text-lg" onClick={() => setOpen(true)}>
-                Start Tracking
+              <Button
+                className=" p-4 text-lg"
+                onClick={() => setSignupOpen(true)}
+              >
+                Sign Up
               </Button>
-
-              <Button className=" p-4 text-lg">Explore</Button>
+              <Button
+                className=" p-4 text-lg"
+                onClick={() => setLoginOpen(true)}
+              >
+                Login
+              </Button>
             </div>
           </div>
         </div>
       </main>
 
-      <SignupDialog open={open} onOpenChange={setOpen} />
+      <SignupDialog open={signupOpen} onOpenChange={setSignupOpen} />
+      <LoginDialog open={loginOpen} onOpenChange={setLoginOpen} />
     </>
   );
 }
