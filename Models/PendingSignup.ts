@@ -49,5 +49,11 @@ const PendingSignupSchema = new Schema<IPendingSignup>(
   },
   {
     timestamps: true,
-  }
+  },
 );
+
+const PendingSignup: Model<IPendingSignup> =
+  mongoose.models.PendingSignup ||
+  mongoose.model<IPendingSignup>("PendingSignup", PendingSignupSchema);
+
+export default PendingSignup;
