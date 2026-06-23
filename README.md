@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DSA Tracker
 
-## Getting Started
+> **Organize your coding questions, track progress, maintain streaks**
 
-First, run the development server:
+A full-stack web application built with **Next.js** to help developers systematically organize DSA (Data Structures & Algorithms) questions, track their interview preparation progress, and maintain consistent learning streaks.
+
+---
+
+## 🎯 What Is DSA Tracker?
+
+DSA Tracker is an interview preparation companion that helps you:
+
+- **📝 Save & Organize** - Collect DSA questions from various sources in one centralized location
+- **📊 Track Progress** - Monitor which questions you've solved and your readiness level
+- **✍️ Add Notes** - Document approaches, edge cases, and solutions for future reference
+- **🔥 Maintain Streaks** - Build consistent coding habits with streak tracking
+- **🔐 Secure** - Email verification and JWT-based authentication
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- **Node.js** 18+ 
+- **npm** or **yarn**
+
+### Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/rahul-kapgate/dsa-tracker-next-js-app.git
+cd dsa-tracker-next-js-app
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Add your MongoDB URI and other config
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
