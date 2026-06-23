@@ -99,7 +99,7 @@ export default function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="rahul@example.com"
+                placeholder="Enter email"
                 className="border-zinc-700 bg-[#171717]"
               />
             </div>

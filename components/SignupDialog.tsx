@@ -217,7 +217,7 @@ export default function SignupDialog({
                     Sending OTP...
                   </span>
                 ) : (
-                  "Continue"
+                  "Get OTP"
                 )}
               </Button>
             </form>
