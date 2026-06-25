@@ -6,14 +6,22 @@ import SignupDialog from "@/components/SignupDialog";
 import LoginDialog from "@/components/loginDialog";
 import { useState } from "react";
 import ThemeToggle from "@/components/theme-toggle";
+import { useLogout } from "@/hooks/auth/useLogout";
 
 export default function Header() {
   const user = useAuthStore((state) => state.user);
+  const isLoading = useAuthStore((state) => state.isLoading);
   const logout = useAuthStore((state) => state.logout);
+
+  const logoutMutation = useLogout();
 
   const [loginOpen, setLoginOpen] = useState(false);
 
   const [signupOpen, setSignupOpen] = useState(false);
+
+  if (isLoading) {
+    return null; // or a skeleton
+  }
 
   return (
     <>
@@ -34,7 +42,11 @@ export default function Header() {
                   ).toUpperCase()}
                 </button>
                 <ThemeToggle />
-                <Button variant="outline" onClick={logout}>
+                <Button
+                  variant="outline"
+                  onClick={() => logoutMutation.mutate()}
+                  disabled={logoutMutation.isPending}
+                >
                   Logout
                 </Button>
               </>
