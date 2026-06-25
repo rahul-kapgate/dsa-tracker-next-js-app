@@ -4,8 +4,16 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import SignupDialog from "@/components/SignupDialog";
 import LoginDialog from "@/components/loginDialog";
+import { useAuthStore } from "@/store/auth-store";
+import { useRouter } from "next/navigation";
+import { MoveRight } from "lucide-react";
 
 export default function Home() {
+  const router = useRouter();
+
+  const user = useAuthStore((state) => state.user);
+  const isLoading = useAuthStore((state) => state.isLoading);
+
   const [loginOpen, setLoginOpen] = useState(false);
 
   const [signupOpen, setSignupOpen] = useState(false);
@@ -35,18 +43,30 @@ export default function Home() {
             </p>
 
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-              <Button
-                className=" p-4 text-lg"
-                onClick={() => setSignupOpen(true)}
-              >
-                Sign Up
-              </Button>
-              <Button
-                className=" p-4 text-lg"
-                onClick={() => setLoginOpen(true)}
-              >
-                Login
-              </Button>
+              {isLoading ? null : user ? (
+                <Button
+                  className="p-4 text-lg"
+                  onClick={() => router.push("/dashboard")}
+                >
+                   Dashboard <MoveRight />
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    className="p-4 text-lg"
+                    onClick={() => setSignupOpen(true)}
+                  >
+                    Sign Up
+                  </Button>
+
+                  <Button
+                    className="p-4 text-lg"
+                    onClick={() => setLoginOpen(true)}
+                  >
+                    Login
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
