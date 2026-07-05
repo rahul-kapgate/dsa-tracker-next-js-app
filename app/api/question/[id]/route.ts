@@ -121,6 +121,7 @@ export async function PUT(
 
       const duplicate = await Question.findOne({
         slug,
+        createdBy: user.userId,
         _id: { $ne: id },
         isDeleted: false,
       });

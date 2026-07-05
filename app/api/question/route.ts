@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
           success: false,
           errors: parsed.error.flatten(),
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
 
     const existing = await Question.findOne({
       slug,
+      createdBy: user.userId,
       isDeleted: false,
     });
 
@@ -44,7 +45,7 @@ export async function POST(req: NextRequest) {
           success: false,
           message: "Question already exists",
         },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -62,7 +63,7 @@ export async function POST(req: NextRequest) {
       },
       {
         status: 201,
-      }
+      },
     );
   } catch (error) {
     console.error(error);
@@ -74,11 +75,10 @@ export async function POST(req: NextRequest) {
       },
       {
         status: 500,
-      }
+      },
     );
   }
 }
-
 
 export async function GET(req: NextRequest) {
   try {
@@ -144,7 +144,7 @@ export async function GET(req: NextRequest) {
       },
       {
         status: 500,
-      }
+      },
     );
   }
 }
