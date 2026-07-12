@@ -45,7 +45,6 @@ export default function Dashboard() {
 
   const [search, setSearch] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState<"" | Difficulty>("");
-  const [topicFilter, setTopicFilter] = useState("");
 
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
@@ -53,7 +52,6 @@ export default function Dashboard() {
   const [error, setError] = useState("");
 
   const debouncedSearch = useDebounce(search, 500);
-  const debouncedTopicFilter = useDebounce(topicFilter, 500);
 
   const {
     data,
@@ -66,7 +64,6 @@ export default function Dashboard() {
     limit,
     search: debouncedSearch,
     difficulty: difficultyFilter || undefined,
-    topic: debouncedTopicFilter,
   });
 
   const isSearching = isFetching && !isLoading;
@@ -87,7 +84,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, difficultyFilter, debouncedTopicFilter]);
+  }, [debouncedSearch, difficultyFilter]);
 
   function openAddModal() {
     setModalMode("add");
@@ -203,12 +200,12 @@ export default function Dashboard() {
 
         <form
           onSubmit={(e) => e.preventDefault()}
-          className="mb-6 grid gap-3 rounded-2xl border border-border bg-card p-4 md:grid-cols-[1fr_180px_180px_auto]"
+          className="mb-6 grid gap-3 rounded-2xl border border-border bg-card p-4 md:grid-cols-[1fr_220px_auto]"
         >
           <div className="relative">
             <Search
               size={18}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
             />
 
             <input
@@ -218,52 +215,41 @@ export default function Dashboard() {
                 setPage(1);
               }}
               placeholder="Search by title..."
-              className="w-full rounded-xl border border-input bg-background py-3 pl-10 pr-10 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-ring"
+              className="h-12 w-full rounded-xl border border-input bg-background pl-11 pr-10 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-ring"
             />
 
             {isSearching && (
               <Loader2
                 size={18}
-                className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-muted-foreground"
+                className="absolute right-4 top-1/2 -translate-y-1/2 animate-spin text-muted-foreground"
               />
             )}
           </div>
 
           <Select
-            value={form.difficulty}
-            onValueChange={(value) =>
-              setForm((prev) => ({
-                ...prev,
-                difficulty: value as Difficulty,
-              }))
-            }
+            value={difficultyFilter || "all"}
+            onValueChange={(value) => {
+              setDifficultyFilter(value === "all" ? "" : (value as Difficulty));
+              setPage(1);
+            }}
           >
-            <SelectTrigger className="h-auto w-full rounded-xl border-input bg-background px-4 py-3 text-sm">
-              <SelectValue placeholder="Select difficulty" />
+            <SelectTrigger className="h-11 min-h-11 w-full rounded-xl border border-input bg-background px-4 text-sm text-foreground shadow-none data-[size=default]:h-11 focus:ring-1 focus:ring-ring focus:ring-offset-0">
+              <SelectValue placeholder="All Difficulty" />
             </SelectTrigger>
 
-            <SelectContent>
+            <SelectContent className="rounded-xl border-border bg-popover text-popover-foreground">
+              <SelectItem value="all">All Difficulty</SelectItem>
               <SelectItem value="Easy">Easy</SelectItem>
               <SelectItem value="Medium">Medium</SelectItem>
               <SelectItem value="Hard">Hard</SelectItem>
             </SelectContent>
           </Select>
 
-          <input
-            value={topicFilter}
-            onChange={(e) => {
-              setTopicFilter(e.target.value);
-              setPage(1);
-            }}
-            placeholder="Topic..."
-            className="rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-ring"
-          />
-
           <button
             type="button"
             onClick={() => refetch()}
             disabled={isLoading}
-            className="rounded-xl bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+            className="h-12 rounded-xl bg-primary px-5 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
           >
             Refresh
           </button>
@@ -522,20 +508,19 @@ export default function Dashboard() {
             </label>
 
             <Select
-              value={difficultyFilter || "all"}
-              onValueChange={(value: string) => {
-                setDifficultyFilter(
-                  value === "all" ? "" : (value as Difficulty),
-                );
-                setPage(1);
-              }}
+              value={form.difficulty}
+              onValueChange={(value) =>
+                setForm((prev) => ({
+                  ...prev,
+                  difficulty: value as Difficulty,
+                }))
+              }
             >
-              <SelectTrigger className="h-auto rounded-xl border-input bg-background px-4 py-3 text-sm">
-                <SelectValue placeholder="All Difficulty" />
+              <SelectTrigger className="h-auto w-full rounded-xl border-input bg-background px-4 py-3 text-sm">
+                <SelectValue placeholder="Select difficulty" />
               </SelectTrigger>
 
               <SelectContent>
-                <SelectItem value="all">All Difficulty</SelectItem>
                 <SelectItem value="Easy">Easy</SelectItem>
                 <SelectItem value="Medium">Medium</SelectItem>
                 <SelectItem value="Hard">Hard</SelectItem>
