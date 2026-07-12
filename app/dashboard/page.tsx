@@ -16,6 +16,13 @@ import {
   Difficulty,
 } from "@/hooks/useQuestions";
 import { TableSkeleton } from "@/components/TableSkeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const emptyForm: QuestionForm = {
   title: "",
@@ -170,8 +177,8 @@ export default function Dashboard() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#191919] text-white">
-      <div className="absolute left-1/2 top-0 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-white/5 blur-3xl" />
+    <main className="relative min-h-screen overflow-hidden bg-background text-foreground transition-colors">
+      <div className="absolute left-1/2 top-0 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-foreground/5 blur-3xl" />
 
       <section className="relative mx-auto max-w-7xl px-6 py-10">
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
@@ -180,26 +187,28 @@ export default function Dashboard() {
               Dashboard
             </h1>
 
-            <p className="mt-2 text-white/60">Manage your questions.</p>
+            <p className="mt-2 text-muted-foreground">Manage your questions.</p>
           </div>
 
-          <button
-            onClick={openAddModal}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 font-medium text-black transition hover:bg-white/90"
-          >
-            <Plus size={18} />
-            Add Question
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={openAddModal}
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 font-medium text-primary-foreground transition hover:bg-primary/90"
+            >
+              <Plus size={18} />
+              Add Question
+            </button>
+          </div>
         </div>
 
         <form
           onSubmit={(e) => e.preventDefault()}
-          className="mb-6 grid gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 md:grid-cols-[1fr_180px_180px_auto]"
+          className="mb-6 grid gap-3 rounded-2xl border border-border bg-card p-4 md:grid-cols-[1fr_180px_180px_auto]"
         >
           <div className="relative">
             <Search
               size={18}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             />
 
             <input
@@ -209,30 +218,36 @@ export default function Dashboard() {
                 setPage(1);
               }}
               placeholder="Search by title..."
-              className="w-full rounded-xl border border-white/10 bg-[#222] py-3 pl-10 pr-10 text-sm outline-none transition placeholder:text-white/40 focus:border-white/30"
+              className="w-full rounded-xl border border-input bg-background py-3 pl-10 pr-10 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-ring"
             />
 
             {isSearching && (
               <Loader2
                 size={18}
-                className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-white/40"
+                className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-muted-foreground"
               />
             )}
           </div>
 
-          <select
-            value={difficultyFilter}
-            onChange={(e) => {
-              setDifficultyFilter(e.target.value as "" | Difficulty);
-              setPage(1);
-            }}
-            className="rounded-xl border border-white/10 bg-[#222] px-4 py-3 text-sm outline-none transition focus:border-white/30"
+          <Select
+            value={form.difficulty}
+            onValueChange={(value) =>
+              setForm((prev) => ({
+                ...prev,
+                difficulty: value as Difficulty,
+              }))
+            }
           >
-            <option value="">All Difficulty</option>
-            <option value="Easy">Easy</option>
-            <option value="Medium">Medium</option>
-            <option value="Hard">Hard</option>
-          </select>
+            <SelectTrigger className="h-auto w-full rounded-xl border-input bg-background px-4 py-3 text-sm">
+              <SelectValue placeholder="Select difficulty" />
+            </SelectTrigger>
+
+            <SelectContent>
+              <SelectItem value="Easy">Easy</SelectItem>
+              <SelectItem value="Medium">Medium</SelectItem>
+              <SelectItem value="Hard">Hard</SelectItem>
+            </SelectContent>
+          </Select>
 
           <input
             value={topicFilter}
@@ -241,51 +256,51 @@ export default function Dashboard() {
               setPage(1);
             }}
             placeholder="Topic..."
-            className="rounded-xl border border-white/10 bg-[#222] px-4 py-3 text-sm outline-none transition placeholder:text-white/40 focus:border-white/30"
+            className="rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-ring"
           />
 
           <button
             type="button"
             onClick={() => refetch()}
             disabled={isLoading}
-            className="rounded-xl bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-xl bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
           >
             Refresh
           </button>
         </form>
 
         {(error || tableError) && (
-          <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-300">
             {error || tableError}
           </div>
         )}
 
-        <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+        <div className="overflow-hidden rounded-2xl border border-border bg-card">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[800px] text-left">
-              <thead className="border-b border-white/10 bg-white/[0.04]">
+              <thead className="border-b border-border bg-muted/40">
                 <tr>
-                  <th className="w-20 px-5 py-4 text-sm font-medium text-white/70">
+                  <th className="w-20 px-5 py-4 text-sm font-medium text-muted-foreground">
                     Sr No.
                   </th>
 
-                  <th className="px-5 py-4 text-sm font-medium text-white/70">
+                  <th className="px-5 py-4 text-sm font-medium text-muted-foreground">
                     Title
                   </th>
 
-                  <th className="px-5 py-4 text-sm font-medium text-white/70">
+                  <th className="px-5 py-4 text-sm font-medium text-muted-foreground">
                     Topic
                   </th>
 
-                  <th className="px-5 py-4 text-sm font-medium text-white/70">
+                  <th className="px-5 py-4 text-sm font-medium text-muted-foreground">
                     Difficulty
                   </th>
 
-                  <th className="px-5 py-4 text-sm font-medium text-white/70">
+                  <th className="px-5 py-4 text-sm font-medium text-muted-foreground">
                     Created At
                   </th>
 
-                  <th className="px-5 py-4 text-right text-sm font-medium text-white/70">
+                  <th className="px-5 py-4 text-right text-sm font-medium text-muted-foreground">
                     Actions
                   </th>
                 </tr>
@@ -298,7 +313,7 @@ export default function Dashboard() {
                   <tr>
                     <td
                       colSpan={6}
-                      className="px-5 py-10 text-center text-white/60"
+                      className="px-5 py-10 text-center text-muted-foreground"
                     >
                       No questions found.
                     </td>
@@ -307,43 +322,43 @@ export default function Dashboard() {
                   questions.map((question, index) => (
                     <tr
                       key={question._id}
-                      className="border-b border-white/10 last:border-b-0 hover:bg-white/[0.03]"
+                      className="border-b border-border transition last:border-b-0 hover:bg-muted/40"
                     >
-                      <td className="px-5 py-4 text-sm font-medium text-white/60">
+                      <td className="px-5 py-4 text-sm font-medium text-muted-foreground">
                         {(page - 1) * limit + index + 1}
                       </td>
 
                       <td className="px-5 py-4">
                         <div>
-                          <p className="font-medium text-white">
+                          <p className="font-medium text-foreground">
                             {question.title}
                           </p>
 
                           {question.description && (
-                            <p className="mt-1 line-clamp-2 text-xs text-white/50">
+                            <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
                               {question.description}
                             </p>
                           )}
 
                           {question.slug && (
-                            <p className="mt-1 text-xs text-white/40">
+                            <p className="mt-1 text-xs text-muted-foreground/70">
                               {question.slug}
                             </p>
                           )}
                         </div>
                       </td>
 
-                      <td className="px-5 py-4 text-sm text-white/70">
+                      <td className="px-5 py-4 text-sm text-muted-foreground">
                         {question.topic || "-"}
                       </td>
 
                       <td className="px-5 py-4">
-                        <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs capitalize text-white/80">
+                        <span className="rounded-full border border-border bg-muted px-3 py-1 text-xs capitalize text-muted-foreground">
                           {question.difficulty || "-"}
                         </span>
                       </td>
 
-                      <td className="px-5 py-4 text-sm text-white/60">
+                      <td className="px-5 py-4 text-sm text-muted-foreground">
                         {question.createdAt
                           ? new Date(question.createdAt).toLocaleDateString()
                           : "-"}
@@ -353,7 +368,7 @@ export default function Dashboard() {
                         <div className="flex justify-end gap-2">
                           <button
                             onClick={() => openEditModal(question)}
-                            className="rounded-lg border border-white/10 p-2 text-white/70 transition hover:bg-white/10 hover:text-white"
+                            className="rounded-lg border border-border p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
                             title="Edit"
                           >
                             <Edit size={17} />
@@ -361,7 +376,7 @@ export default function Dashboard() {
 
                           <button
                             onClick={() => openDeleteModal(question)}
-                            className="rounded-lg border border-red-500/20 p-2 text-red-300 transition hover:bg-red-500/10"
+                            className="rounded-lg border border-red-500/30 p-2 text-red-500 transition hover:bg-red-500/10"
                             title="Delete"
                           >
                             <Trash2 size={17} />
@@ -375,8 +390,8 @@ export default function Dashboard() {
             </table>
           </div>
 
-          <div className="flex flex-col items-center justify-between gap-3 border-t border-white/10 px-5 py-4 md:flex-row">
-            <p className="text-sm text-white/50">
+          <div className="flex flex-col items-center justify-between gap-3 border-t border-border px-5 py-4 md:flex-row">
+            <p className="text-sm text-muted-foreground">
               Page {page} of {totalPages}
             </p>
 
@@ -384,7 +399,7 @@ export default function Dashboard() {
               <button
                 disabled={page <= 1 || isFetching}
                 onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                className="rounded-lg border border-white/10 px-4 py-2 text-sm text-white/70 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                className="rounded-lg border border-border px-4 py-2 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Previous
               </button>
@@ -392,7 +407,7 @@ export default function Dashboard() {
               <button
                 disabled={page >= totalPages || isFetching}
                 onClick={() => setPage((prev) => prev + 1)}
-                className="rounded-lg border border-white/10 px-4 py-2 text-sm text-white/70 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                className="rounded-lg border border-border px-4 py-2 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Next
               </button>
@@ -416,7 +431,7 @@ export default function Dashboard() {
               type="button"
               onClick={closeFormModal}
               disabled={submitting}
-              className="rounded-xl border border-white/10 px-4 py-2 text-sm text-white/70 transition hover:bg-white/10 disabled:opacity-50"
+              className="rounded-xl border border-border px-4 py-2 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:opacity-50"
             >
               Cancel
             </button>
@@ -425,7 +440,7 @@ export default function Dashboard() {
               type="submit"
               form="question-form"
               disabled={submitting}
-              className="rounded-xl bg-white px-5 py-2 text-sm font-medium text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-xl bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {submitting
                 ? "Saving..."
@@ -437,14 +452,16 @@ export default function Dashboard() {
         }
       >
         {error && (
-          <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-300">
             {error}
           </div>
         )}
 
         <form id="question-form" onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="mb-2 block text-sm text-white/70">Title</label>
+            <label className="mb-2 block text-sm text-muted-foreground">
+              Title
+            </label>
 
             <input
               value={form.title}
@@ -455,13 +472,13 @@ export default function Dashboard() {
                 }))
               }
               placeholder="Enter question title"
-              className="w-full rounded-xl border border-white/10 bg-[#191919] px-4 py-3 text-sm outline-none transition placeholder:text-white/40 focus:border-white/30"
+              className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-ring"
               required
             />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm text-white/70">
+            <label className="mb-2 block text-sm text-muted-foreground">
               Description
             </label>
 
@@ -475,13 +492,15 @@ export default function Dashboard() {
               }
               placeholder="Enter question description"
               rows={4}
-              className="w-full resize-none rounded-xl border border-white/10 bg-[#191919] px-4 py-3 text-sm outline-none transition placeholder:text-white/40 focus:border-white/30"
+              className="w-full resize-none rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-ring"
               required
             />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm text-white/70">Topic</label>
+            <label className="mb-2 block text-sm text-muted-foreground">
+              Topic
+            </label>
 
             <input
               value={form.topic}
@@ -492,31 +511,36 @@ export default function Dashboard() {
                 }))
               }
               placeholder="Example: React, MongoDB, JavaScript"
-              className="w-full rounded-xl border border-white/10 bg-[#191919] px-4 py-3 text-sm outline-none transition placeholder:text-white/40 focus:border-white/30"
+              className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-ring"
               required
             />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm text-white/70">
+            <label className="mb-2 block text-sm text-muted-foreground">
               Difficulty
             </label>
 
-            <select
-              value={form.difficulty}
-              onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  difficulty: e.target.value as Difficulty,
-                }))
-              }
-              className="w-full rounded-xl border border-white/10 bg-[#191919] px-4 py-3 text-sm outline-none transition focus:border-white/30"
-              required
+            <Select
+              value={difficultyFilter || "all"}
+              onValueChange={(value: string) => {
+                setDifficultyFilter(
+                  value === "all" ? "" : (value as Difficulty),
+                );
+                setPage(1);
+              }}
             >
-              <option value="Easy">Easy</option>
-              <option value="Medium">Medium</option>
-              <option value="Hard">Hard</option>
-            </select>
+              <SelectTrigger className="h-auto rounded-xl border-input bg-background px-4 py-3 text-sm">
+                <SelectValue placeholder="All Difficulty" />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectItem value="all">All Difficulty</SelectItem>
+                <SelectItem value="Easy">Easy</SelectItem>
+                <SelectItem value="Medium">Medium</SelectItem>
+                <SelectItem value="Hard">Hard</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </form>
       </ReusableModal>
@@ -531,7 +555,7 @@ export default function Dashboard() {
             <button
               onClick={closeDeleteModal}
               disabled={submitting}
-              className="rounded-xl border border-white/10 px-4 py-2 text-sm text-white/70 transition hover:bg-white/10 disabled:opacity-50"
+              className="rounded-xl border border-border px-4 py-2 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:opacity-50"
             >
               Cancel
             </button>
@@ -547,14 +571,14 @@ export default function Dashboard() {
         }
       >
         {error && (
-          <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-300">
             {error}
           </div>
         )}
 
-        <p className="text-sm text-white/70">
+        <p className="text-sm text-muted-foreground">
           Are you sure you want to delete{" "}
-          <span className="font-semibold text-white">
+          <span className="font-semibold text-foreground">
             {selectedQuestion?.title}
           </span>
           ?

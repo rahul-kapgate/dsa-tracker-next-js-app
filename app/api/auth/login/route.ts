@@ -49,23 +49,29 @@ export async function POST(req: NextRequest) {
       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
 
+    const userObject = user.toObject();
+
+    const { password: _, ...userWithoutPassword } = userObject;
+
     const response = NextResponse.json({
       success: true,
       message: "Login successful",
-      user : user,
+      user: userWithoutPassword,
     });
 
     response.cookies.set("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "lax",
+      path: "/",
       maxAge: 15 * 60,
     });
 
     response.cookies.set("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "lax",
+      path: "/",
       maxAge: 7 * 24 * 60 * 60,
     });
 

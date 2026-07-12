@@ -1,6 +1,7 @@
 // hooks/useQuestions.ts
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/lib/api-client";
+import axios from "axios";
 
 export type Difficulty = "Easy" | "Medium" | "Hard";
 
@@ -67,9 +68,7 @@ export function getApiErrorMessage(error: unknown) {
   if (err?.response?.data?.errors?.fieldErrors) {
     const fieldErrors = err.response.data.errors.fieldErrors;
 
-    const firstError = Object.values(fieldErrors)
-      .flat()
-      .filter(Boolean)[0];
+    const firstError = Object.values(fieldErrors).flat().filter(Boolean)[0];
 
     if (firstError) return String(firstError);
   }
@@ -84,6 +83,7 @@ export function getApiErrorMessage(error: unknown) {
 export const useQuestions = (params: QuestionListParams) => {
   return useQuery({
     queryKey: questionKeys.list(params),
+
     queryFn: async () => {
       const { data } = await apiClient.get<QuestionListResponse>(
         "/api/question",
@@ -95,8 +95,15 @@ export const useQuestions = (params: QuestionListParams) => {
       return data;
     },
 
-    // keeps old table data while new search result is loading
     placeholderData: (previousData) => previousData,
+
+    retry: (failureCount, error) => {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        return false;
+      }
+
+      return failureCount < 2;
+    },
   });
 };
 

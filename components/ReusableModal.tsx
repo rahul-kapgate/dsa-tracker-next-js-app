@@ -23,19 +23,24 @@ export default function ReusableModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
-      <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#202020] shadow-2xl">
-        <div className="flex items-start justify-between border-b border-white/10 px-6 py-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm">
+      <div className="w-full max-w-lg rounded-2xl border border-border bg-card text-card-foreground shadow-2xl">
+        <div className="flex items-start justify-between border-b border-border px-6 py-4">
           <div>
-            <h2 className="text-xl font-semibold text-white">{title}</h2>
+            <h2 className="text-xl font-semibold text-foreground">{title}</h2>
+
             {description && (
-              <p className="mt-1 text-sm text-white/60">{description}</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {description}
+              </p>
             )}
           </div>
 
           <button
+            type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-white/60 transition hover:bg-white/10 hover:text-white"
+            className="rounded-lg p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+            aria-label="Close modal"
           >
             <X size={20} />
           </button>
@@ -44,7 +49,7 @@ export default function ReusableModal({
         <div className="px-6 py-5">{children}</div>
 
         {footer && (
-          <div className="flex justify-end gap-3 border-t border-white/10 px-6 py-4">
+          <div className="flex justify-end gap-3 border-t border-border px-6 py-4">
             {footer}
           </div>
         )}

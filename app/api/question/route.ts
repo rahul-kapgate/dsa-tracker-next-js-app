@@ -3,7 +3,10 @@ import slugify from "slugify";
 
 import { connectDB } from "@/configs/dbConfig";
 import Question from "@/models/Question";
-import { verifyToken } from "@/middleware/auth";
+import {
+  UnauthorizedError,
+  verifyToken,
+} from "@/middleware/auth";
 import { createQuestionSchema } from "@/lib/validators/question.validation";
 
 export async function POST(req: NextRequest) {
@@ -135,6 +138,17 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error) {
+
+    if (error instanceof UnauthorizedError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: error.message,
+        },
+        { status: 401 },
+      );
+    }
+    
     console.error(error);
 
     return NextResponse.json(
