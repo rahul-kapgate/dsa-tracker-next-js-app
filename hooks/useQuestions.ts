@@ -5,6 +5,7 @@ import axios from "axios";
 
 export type Difficulty = "Easy" | "Medium" | "Hard";
 
+
 export type Question = {
   _id: string;
   title: string;
@@ -12,6 +13,7 @@ export type Question = {
   description: string;
   topic: string;
   difficulty: Difficulty;
+  revision: boolean;
   createdAt?: string;
 };
 
@@ -157,6 +159,78 @@ export const useDeleteQuestion = () => {
     },
 
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: questionKeys.all,
+      });
+    },
+  });
+};
+
+
+export const useUpdateRevisionStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      revision,
+    }: {
+      id: string;
+      revision: boolean;
+    }) => {
+      const { data } = await apiClient.put(`/api/question/${id}`, {
+        revision,
+      });
+
+      return data;
+    },
+
+    // Immediately update the UI
+    onMutate: async ({ id, revision }) => {
+      await queryClient.cancelQueries({
+        queryKey: questionKeys.all,
+      });
+
+      const previousQuestions =
+        queryClient.getQueriesData<QuestionListResponse>({
+          queryKey: questionKeys.all,
+        });
+
+      queryClient.setQueriesData<QuestionListResponse>(
+        {
+          queryKey: questionKeys.all,
+        },
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            data: oldData.data.map((question) =>
+              question._id === id
+                ? {
+                    ...question,
+                    revision,
+                  }
+                : question,
+            ),
+          };
+        },
+      );
+
+      return {
+        previousQuestions,
+      };
+    },
+
+    // Restore old state if API fails
+    onError: (_error, _variables, context) => {
+      context?.previousQuestions.forEach(([queryKey, previousData]) => {
+        queryClient.setQueryData(queryKey, previousData);
+      });
+    },
+
+    // Confirm latest server data
+    onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: questionKeys.all,
       });

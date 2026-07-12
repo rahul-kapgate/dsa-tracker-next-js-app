@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Edit, Loader2, Plus, Search, Trash2 } from "lucide-react";
+import { Edit, Loader2, Plus, Search, Star, Trash2 } from "lucide-react";
 
 import ReusableModal from "@/components/ReusableModal";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -13,6 +13,7 @@ import {
   useDeleteQuestion,
   useQuestions,
   useUpdateQuestion,
+  useUpdateRevisionStatus,
   Difficulty,
 } from "@/hooks/useQuestions";
 import { TableSkeleton } from "@/components/TableSkeleton";
@@ -71,6 +72,7 @@ export default function Dashboard() {
   const createQuestion = useCreateQuestion();
   const updateQuestion = useUpdateQuestion();
   const deleteQuestion = useDeleteQuestion();
+  const updateRevisionStatus = useUpdateRevisionStatus();
 
   const questions = data?.data || [];
   const totalPages = data?.pagination?.pages || 1;
@@ -170,6 +172,22 @@ export default function Dashboard() {
       }
     } catch (err) {
       setError(getApiErrorMessage(err));
+    }
+  }
+
+  async function handleRevision(
+    questionId: string,
+    currentRevisionStatus: boolean,
+  ) {
+    try {
+      setError("");
+
+      await updateRevisionStatus.mutateAsync({
+        id: questionId,
+        revision: !currentRevisionStatus,
+      });
+    } catch (error) {
+      setError(getApiErrorMessage(error));
     }
   }
 
@@ -285,6 +303,9 @@ export default function Dashboard() {
                   <th className="px-5 py-4 text-sm font-medium text-muted-foreground">
                     Created At
                   </th>
+                  <th className="px-5 py-4 text-sm font-medium text-muted-foreground">
+                    Revision
+                  </th>
 
                   <th className="px-5 py-4 text-right text-sm font-medium text-muted-foreground">
                     Actions
@@ -298,7 +319,7 @@ export default function Dashboard() {
                 ) : questions.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={6}
+                      colSpan={7}
                       className="px-5 py-10 text-center text-muted-foreground"
                     >
                       No questions found.
@@ -325,12 +346,6 @@ export default function Dashboard() {
                               {question.description}
                             </p>
                           )}
-
-                          {question.slug && (
-                            <p className="mt-1 text-xs text-muted-foreground/70">
-                              {question.slug}
-                            </p>
-                          )}
                         </div>
                       </td>
 
@@ -348,6 +363,38 @@ export default function Dashboard() {
                         {question.createdAt
                           ? new Date(question.createdAt).toLocaleDateString()
                           : "-"}
+                      </td>
+
+                      <td className="px-5 py-4">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleRevision(
+                              question._id,
+                              question.revision ?? false,
+                            )
+                          }
+                          className={`rounded-lg p-2 transition hover:bg-muted ${
+                            question.revision
+                              ? "text-yellow-500"
+                              : "text-muted-foreground"
+                          }`}
+                          aria-label={
+                            question.revision
+                              ? "Remove from revision"
+                              : "Mark for revision"
+                          }
+                          title={
+                            question.revision
+                              ? "Remove from revision"
+                              : "Mark for revision"
+                          }
+                        >
+                          <Star
+                            size={20}
+                            className={question.revision ? "fill-current" : ""}
+                          />
+                        </button>
                       </td>
 
                       <td className="px-5 py-4">
